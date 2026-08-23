@@ -12,6 +12,8 @@ import Register from "./pages/Register";
 import Course from "./pages/Course";
 import Lesson from "./pages/Lesson";
 import Assessment from "./pages/Assessment";
+import WeakAreas from "./pages/WeakAreas";
+import Recommendation from "./pages/Recommendation";
 
 
 function App() {
@@ -61,6 +63,16 @@ function App() {
                     path="/assessment/:assessmentId"
                     element={<Assessment />}
                 />
+
+                <Route
+    path="/adaptive/courses/:courseId/weak-areas"
+    element={<WeakAreas />}
+/>
+
+<Route
+    path="/adaptive/courses/:courseId/recommendation"
+    element={<Recommendation />}
+/>
 
                 <Route
                     path="/live-learning/:roomId"
