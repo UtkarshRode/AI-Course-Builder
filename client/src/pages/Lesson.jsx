@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import api from "../services/api";
 import Navbar from "../components/Navbar";
@@ -13,10 +13,14 @@ const Lesson = () => {
         lessonId
     } = useParams();
 
+    const navigate = useNavigate();
+
 
     const [lesson, setLesson] = useState(null);
     const [loading, setLoading] = useState(true);
     const [completing, setCompleting] = useState(false);
+    const [generatingAssessment, setGeneratingAssessment] =
+        useState(false);
 
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -39,10 +43,13 @@ const Lesson = () => {
                         "courseforge_token"
                     );
 
+
                 if (!token) {
+
                     setError(
                         "You are not logged in."
                     );
+
                     return;
                 }
 
@@ -128,7 +135,9 @@ const Lesson = () => {
             } finally {
 
                 setLoading(false);
+
             }
+
         };
 
 
@@ -253,7 +262,101 @@ const Lesson = () => {
         } finally {
 
             setCompleting(false);
+
         }
+
+    };
+
+
+    /*
+     * =========================================================
+     * GENERATE ASSESSMENT
+     * =========================================================
+     */
+
+    const handleAssessment = async () => {
+
+        try {
+
+            setGeneratingAssessment(true);
+            setError("");
+            setSuccess("");
+
+
+            const token =
+                localStorage.getItem(
+                    "courseforge_token"
+                );
+
+
+            if (!token) {
+
+                setError(
+                    "You are not logged in."
+                );
+
+                return;
+            }
+
+
+            const response =
+                await api.post(
+                    `/assessments/lessons/${lessonId}/generate`,
+                    {},
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+
+            if (!response.data.success) {
+
+                throw new Error(
+                    response.data.message ||
+                    "Failed to generate assessment"
+                );
+            }
+
+
+            const assessment =
+                response.data.assessment;
+
+
+            if (!assessment?.id) {
+
+                throw new Error(
+                    "Assessment was generated but no assessment ID was returned."
+                );
+            }
+
+
+            navigate(
+                `/assessment/${assessment.id}`
+            );
+
+
+        } catch (err) {
+
+            console.error(
+                "Assessment generation error:",
+                err
+            );
+
+            setError(
+                err.response?.data?.message ||
+                err.message ||
+                "Failed to generate assessment"
+            );
+
+        } finally {
+
+            setGeneratingAssessment(false);
+
+        }
+
     };
 
 
@@ -318,6 +421,7 @@ const Lesson = () => {
                 </main>
             </>
         );
+
     }
 
 
@@ -572,6 +676,21 @@ const Lesson = () => {
                     )}
 
 
+                    <button
+                        className="primary-btn"
+                        onClick={
+                            handleAssessment
+                        }
+                        disabled={
+                            generatingAssessment
+                        }
+                    >
+                        {generatingAssessment
+                            ? "Preparing Assessment..."
+                            : "Take Assessment"}
+                    </button>
+
+
                     <Link
                         to={`/course/${courseId}`}
                         className="primary-btn"
@@ -584,6 +703,7 @@ const Lesson = () => {
             </main>
         </>
     );
+
 };
 
 
