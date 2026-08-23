@@ -1117,7 +1117,6 @@ const Dashboard = () => {
                         additional practice.
                     </p>
 
-
                     <div
                         className="grid grid-2"
                         style={{
@@ -1125,217 +1124,192 @@ const Dashboard = () => {
                         }}
                     >
 
-                        {/* Weak Areas */}
+                        {/* Areas to Improve */}
 
-                        <div className="card">
+                        <Link
+                            to={`/adaptive/courses/${COURSE_ID}/weak-areas`}
+                            style={{
+                                textDecoration: "none",
+                                color: "inherit"
+                            }}
+                        >
+                            <div
+                                className="card"
+                                style={{
+                                    cursor: "pointer",
+                                    height: "100%"
+                                }}
+                            >
+                                <h2>
+                                    Areas to Improve
+                                </h2>
 
-                            <h2>
-                                Areas to Improve
-                            </h2>
+                                {weakConcepts.length === 0 ? (
+                                    <p
+                                        className="muted"
+                                        style={{
+                                            marginTop: "16px"
+                                        }}
+                                    >
+                                        Great job! You currently
+                                        have no concepts below
+                                        the mastery threshold.
+                                    </p>
+                                ) : (
+                                    <div
+                                        style={{
+                                            marginTop: "16px"
+                                        }}
+                                    >
+                                        {weakConcepts.map(
+                                            concept => (
+                                                <div
+                                                    key={concept.id}
+                                                    style={{
+                                                        padding: "14px 0",
+                                                        borderBottom:
+                                                            "1px solid #eee"
+                                                    }}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            justifyContent:
+                                                                "space-between",
+                                                            gap: "12px"
+                                                        }}
+                                                    >
+                                                        <strong>
+                                                            {concept.name ||
+                                                                concept.conceptId}
+                                                        </strong>
+
+                                                        <span>
+                                                            {Math.round(
+                                                                concept.masteryScore
+                                                            )}%
+                                                        </span>
+                                                    </div>
+
+                                                    <ProgressBar
+                                                        value={
+                                                            concept.masteryScore
+                                                        }
+                                                    />
+
+                                                    <p
+                                                        className="muted"
+                                                        style={{
+                                                            marginTop: "6px"
+                                                        }}
+                                                    >
+                                                        {concept.status}
+                                                    </p>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </Link>
 
 
-                            {weakConcepts.length === 0 ? (
+                        {/* Next Recommendation */}
 
-                                <p
-                                    className="muted"
-                                    style={{
-                                        marginTop: "16px"
-                                    }}
-                                >
-                                    Great job! You currently
-                                    have no concepts below
-                                    the mastery threshold.
-                                </p>
+                        <Link
+                            to={`/adaptive/courses/${COURSE_ID}/recommendation`}
+                            style={{
+                                textDecoration: "none",
+                                color: "inherit"
+                            }}
+                        >
+                            <div
+                                className="card"
+                                style={{
+                                    cursor: "pointer",
+                                    height: "100%"
+                                }}
+                            >
+                                <h2>
+                                    Next Recommendation
+                                </h2>
 
-                            ) : (
-
-                                <div
-                                    style={{
-                                        marginTop: "16px"
-                                    }}
-                                >
-
-                                    {weakConcepts.map(
-                                        concept => (
-
-                                            <div
-                                                key={
-                                                    concept.id
+                                {recommendation ? (
+                                    <div
+                                        style={{
+                                            marginTop: "16px"
+                                        }}
+                                    >
+                                        {recommendation.concept && (
+                                            <p>
+                                                <strong>
+                                                    Focus Concept:
+                                                </strong>{" "}
+                                                {
+                                                    recommendation
+                                                        .concept.name
                                                 }
+                                            </p>
+                                        )}
+
+                                        {recommendation.lesson && (
+                                            <p
                                                 style={{
-                                                    padding:
-                                                        "14px 0",
-                                                    borderBottom:
-                                                        "1px solid #eee"
+                                                    marginTop: "12px"
                                                 }}
                                             >
+                                                <strong>
+                                                    Recommended Lesson:
+                                                </strong>{" "}
+                                                {
+                                                    recommendation
+                                                        .lesson.title
+                                                }
+                                            </p>
+                                        )}
 
-                                                <div
-                                                    style={{
-                                                        display:
-                                                            "flex",
-                                                        justifyContent:
-                                                            "space-between",
-                                                        gap:
-                                                            "12px"
-                                                    }}
-                                                >
+                                        {recommendation.reason && (
+                                            <p
+                                                className="muted"
+                                                style={{
+                                                    marginTop: "12px"
+                                                }}
+                                            >
+                                                {
+                                                    recommendation
+                                                        .reason
+                                                }
+                                            </p>
+                                        )}
 
-                                                    <strong>
-                                                        {concept.name ||
-                                                            concept.conceptId}
-                                                    </strong>
-
-                                                    <span>
-                                                        {Math.round(
-                                                            concept.masteryScore
-                                                        )}%
-                                                    </span>
-
-                                                </div>
-
-
-                                                <ProgressBar
-                                                    value={
-                                                        concept.masteryScore
-                                                    }
-                                                />
-
-
-                                                <p
-                                                    className="muted"
-                                                    style={{
-                                                        marginTop:
-                                                            "6px"
-                                                    }}
-                                                >
-                                                    {concept.status}
-                                                </p>
-
-                                            </div>
-
-                                        )
-                                    )}
-
-                                </div>
-
-                            )}
-
-                        </div>
-
-
-                        {/* Recommendation */}
-
-                        <div className="card">
-
-                            <h2>
-                                Next Recommendation
-                            </h2>
-
-
-                            {recommendation ? (
-
-                                <div
-                                    style={{
-                                        marginTop:
-                                            "16px"
-                                    }}
-                                >
-
-                                    {recommendation.concept && (
-
-                                        <p>
-
-                                            <strong>
-                                                Focus Concept:
-                                            </strong>{" "}
-
-                                            {
-                                                recommendation
-                                                    .concept.name
-                                            }
-
-                                        </p>
-
-                                    )}
-
-
-                                    {recommendation.lesson && (
-
-                                        <p
-                                            style={{
-                                                marginTop:
-                                                    "12px"
-                                            }}
-                                        >
-
-                                            <strong>
-                                                Recommended Lesson:
-                                            </strong>{" "}
-
-                                            {
-                                                recommendation
-                                                    .lesson.title
-                                            }
-
-                                        </p>
-
-                                    )}
-
-
-                                    {recommendation.reason && (
-
-                                        <p
-                                            className="muted"
-                                            style={{
-                                                marginTop:
-                                                    "12px"
-                                            }}
-                                        >
-                                            {
-                                                recommendation
-                                                    .reason
-                                            }
-                                        </p>
-
-                                    )}
-
-
-                                    {recommendation.message && (
-
-                                        <p
-                                            className="muted"
-                                            style={{
-                                                marginTop:
-                                                    "12px"
-                                            }}
-                                        >
-                                            {
-                                                recommendation
-                                                    .message
-                                            }
-                                        </p>
-
-                                    )}
-
-                                </div>
-
-                            ) : (
-
-                                <p
-                                    className="muted"
-                                    style={{
-                                        marginTop: "16px"
-                                    }}
-                                >
-                                    Complete an assessment
-                                    to receive a personalized
-                                    learning recommendation.
-                                </p>
-
-                            )}
-
-                        </div>
+                                        {recommendation.message && (
+                                            <p
+                                                className="muted"
+                                                style={{
+                                                    marginTop: "12px"
+                                                }}
+                                            >
+                                                {
+                                                    recommendation
+                                                        .message
+                                                }
+                                            </p>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <p
+                                        className="muted"
+                                        style={{
+                                            marginTop: "16px"
+                                        }}
+                                    >
+                                        Complete an assessment
+                                        to receive a personalized
+                                        learning recommendation.
+                                    </p>
+                                )}
+                            </div>
+                        </Link>
 
                     </div>
 
