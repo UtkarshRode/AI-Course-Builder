@@ -1451,12 +1451,10 @@ const Dashboard = () => {
                                             >
 
                                                 <Link
-                                                    to={`/courses/${COURSE_ID}/lessons/${lesson.id}`}
-                                                >
-                                                    {
-                                                        lesson.title
-                                                    }
-                                                </Link>
+    to={`/lesson/${lesson.id}`}
+>
+    {lesson.title}
+</Link>
 
 
                                                 <span
