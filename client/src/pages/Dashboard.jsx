@@ -1073,7 +1073,7 @@ const Dashboard = () => {
 
                                         <Link
                                             className="button"
-                                            to={`/courses/${COURSE_ID}/lessons/${agentPlan.recommendedLessonId}`}
+                                            to={`/course/${COURSE_ID}/lesson/${agentPlan.recommendedLessonId}`}
                                         >
                                             Start Recommended Lesson
                                         </Link>
