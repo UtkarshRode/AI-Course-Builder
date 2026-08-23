@@ -1,10 +1,66 @@
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+    Navigate
+} from "react-router-dom";
+
+import Dashboard from "./pages/Dashboard";
+import LiveLearningRoom from "./pages/LiveLearningRoom";
+
+
 function App() {
+
     return (
-        <div>
-            <h1>CourseForge AI</h1>
-            <p>Adaptive AI Learning & Course Engineering Platform</p>
-        </div>
+
+        <BrowserRouter>
+
+            <Routes>
+
+                <Route
+                    path="/"
+                    element={
+                        <Navigate
+                            to="/dashboard"
+                            replace
+                        />
+                    }
+                />
+
+
+                <Route
+                    path="/dashboard"
+                    element={
+                        <Dashboard />
+                    }
+                />
+
+
+                <Route
+                    path="/live-learning/:roomId"
+                    element={
+                        <LiveLearningRoom />
+                    }
+                />
+
+
+                <Route
+                    path="*"
+                    element={
+                        <Navigate
+                            to="/dashboard"
+                            replace
+                        />
+                    }
+                />
+
+            </Routes>
+
+        </BrowserRouter>
+
     );
+
 }
+
 
 export default App;
