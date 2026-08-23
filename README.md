@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 CourseForge AI
+# 🚀 AI Course Builder with Agentic Adaptive Learning
 
 ### AI-Powered Adaptive Learning Platform
 
@@ -32,7 +32,7 @@ Most learning platforms follow a fixed path:
 Course → Lesson → Quiz → Completion
 ```
 
-**CourseForge AI closes the loop.**
+**AI Course Builder with Agentic Adaptive Learning closes the loop.**
 
 The learner's assessment performance is converted into **concept-level mastery**, weak concepts are identified, relevant lessons are recommended, and an **AI learning agent** uses that learner state to generate a personalized learning strategy.
 
@@ -92,7 +92,7 @@ The learner's assessment performance is converted into **concept-level mastery**
 
 # 🧠 Agentic AI Learning Engine
 
-The strongest part of CourseForge AI is not simply "an AI chatbot."
+The strongest part of the platform is not simply "an AI chatbot."
 
 The learner agent operates on **actual learner state**.
 
@@ -767,7 +767,7 @@ WebRTC provides the foundation for live audio/video learning sessions.
 
 ### Utkarsh
 
-**CourseForge AI — AI-powered adaptive learning platform**
+**AI Course Builder with Agentic Adaptive Learning**
 
 [🌐 Live Application](https://ai-course-builder-kdbzkt0bn-utkarsh-rode.vercel.app/)
 
