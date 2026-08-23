@@ -1,6 +1,5 @@
 const rooms = new Map();
 
-
 const getRoom = (roomId) => {
 
     if (!rooms.has(roomId)) {
@@ -34,7 +33,6 @@ const setupWebRTC = (
     socket
 ) => {
 
-
     // =========================================================
     // JOIN ROOM
     // =========================================================
@@ -53,14 +51,11 @@ const setupWebRTC = (
                 return;
             }
 
-
             const room =
                 getRoom(roomId);
 
-
             /*
-             * This implementation supports
-             * two-person peer-to-peer sessions.
+             * Two-person peer-to-peer sessions.
              */
 
             if (
@@ -75,16 +70,13 @@ const setupWebRTC = (
                 return;
             }
 
-
             room.add(
                 socket.id
             );
 
-
             socket.join(
                 roomId
             );
-
 
             socket.data.webrtcRoomId =
                 roomId;
@@ -92,11 +84,9 @@ const setupWebRTC = (
             socket.data.webrtcUserId =
                 userId;
 
-
             console.log(
                 `WebRTC user ${userId} joined room ${roomId}`
             );
-
 
             /*
              * Tell the joining client how
@@ -106,7 +96,6 @@ const setupWebRTC = (
             const peerCount =
                 room.size - 1;
 
-
             socket.emit(
                 "webrtc:room-joined",
                 {
@@ -114,7 +103,6 @@ const setupWebRTC = (
                     peerCount
                 }
             );
-
 
             /*
              * Notify existing peer.
@@ -151,11 +139,9 @@ const setupWebRTC = (
                 return;
             }
 
-
             console.log(
                 `WebRTC offer received for room ${roomId}`
             );
-
 
             socket
                 .to(roomId)
@@ -188,11 +174,9 @@ const setupWebRTC = (
                 return;
             }
 
-
             console.log(
                 `WebRTC answer received for room ${roomId}`
             );
-
 
             socket
                 .to(roomId)
@@ -224,7 +208,6 @@ const setupWebRTC = (
             ) {
                 return;
             }
-
 
             socket
                 .to(roomId)
@@ -270,7 +253,6 @@ const setupWebRTC = (
             const roomId =
                 socket.data.webrtcRoomId;
 
-
             if (roomId) {
 
                 leaveWebRTCRoom(
@@ -296,21 +278,17 @@ const leaveWebRTCRoom = (
     const room =
         rooms.get(roomId);
 
-
     if (!room) {
         return;
     }
-
 
     room.delete(
         socket.id
     );
 
-
     socket.leave(
         roomId
     );
-
 
     socket
         .to(roomId)
@@ -318,18 +296,15 @@ const leaveWebRTCRoom = (
             "webrtc:peer-left"
         );
 
-
     socket.data.webrtcRoomId =
         null;
 
     socket.data.webrtcUserId =
         null;
 
-
     removeEmptyRoom(
         roomId
     );
-
 
     console.log(
         `WebRTC socket ${socket.id} left room ${roomId}`

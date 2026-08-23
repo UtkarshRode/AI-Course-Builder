@@ -1,14 +1,25 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import {
+    useEffect,
+    useRef,
+    useState
+} from "react";
+
+import {
+    useParams,
+    useNavigate
+} from "react-router-dom";
 
 import socket from "../services/socket";
 
 
 const LiveLearningRoom = () => {
 
-    const { roomId } = useParams();
+    const {
+        roomId
+    } = useParams();
 
-    const navigate = useNavigate();
+    const navigate =
+        useNavigate();
 
 
     const localVideoRef =
@@ -22,6 +33,9 @@ const LiveLearningRoom = () => {
 
     const localStreamRef =
         useRef(null);
+
+    const pendingIceCandidatesRef =
+        useRef([]);
 
 
     const [connected, setConnected] =
@@ -89,6 +103,12 @@ const LiveLearningRoom = () => {
      */
 
     const createPeerConnection = () => {
+
+        if (
+            peerConnectionRef.current
+        ) {
+            return peerConnectionRef.current;
+        }
 
         const peerConnection =
             new RTCPeerConnection({
@@ -196,6 +216,53 @@ const LiveLearningRoom = () => {
 
     /*
      * =========================================================
+     * ADD PENDING ICE CANDIDATES
+     * =========================================================
+     */
+
+    const flushPendingIceCandidates =
+        async () => {
+
+            const peerConnection =
+                peerConnectionRef.current;
+
+            if (
+                !peerConnection ||
+                !peerConnection.remoteDescription
+            ) {
+                return;
+            }
+
+            for (
+                const candidate
+                of pendingIceCandidatesRef.current
+            ) {
+
+                try {
+
+                    await peerConnection.addIceCandidate(
+                        candidate
+                    );
+
+                } catch (err) {
+
+                    console.error(
+                        "Pending ICE candidate error:",
+                        err
+                    );
+
+                }
+
+            }
+
+            pendingIceCandidatesRef.current =
+                [];
+
+        };
+
+
+    /*
+     * =========================================================
      * CREATE OFFER
      * =========================================================
      */
@@ -207,20 +274,16 @@ const LiveLearningRoom = () => {
             const peerConnection =
                 peerConnectionRef.current;
 
-
             if (!peerConnection) {
                 return;
             }
 
-
             const offer =
                 await peerConnection.createOffer();
-
 
             await peerConnection.setLocalDescription(
                 offer
             );
-
 
             socket.emit(
                 "webrtc:offer",
@@ -264,7 +327,6 @@ const LiveLearningRoom = () => {
                     }
                 );
 
-
             localStreamRef.current =
                 stream;
 
@@ -286,7 +348,7 @@ const LiveLearningRoom = () => {
             stream
                 .getTracks()
                 .forEach(
-                    track => {
+                    (track) => {
 
                         peerConnection.addTrack(
                             track,
@@ -300,6 +362,8 @@ const LiveLearningRoom = () => {
             setConnected(
                 true
             );
+
+            setError("");
 
         } catch (err) {
 
@@ -348,7 +412,6 @@ const LiveLearningRoom = () => {
                     socket.id
                 );
 
-
                 socket.emit(
                     "webrtc:join",
                     {
@@ -372,17 +435,8 @@ const LiveLearningRoom = () => {
                 );
 
 
-                /*
-                 * Start local media first.
-                 */
-
                 await startMedia();
 
-
-                /*
-                 * If another peer already exists,
-                 * this user becomes the offerer.
-                 */
 
                 if (
                     peerCount > 0
@@ -432,6 +486,9 @@ const LiveLearningRoom = () => {
                             offer
                         )
                     );
+
+
+                    await flushPendingIceCandidates();
 
 
                     const answer =
@@ -494,6 +551,9 @@ const LiveLearningRoom = () => {
                         )
                     );
 
+
+                    await flushPendingIceCandidates();
+
                 } catch (err) {
 
                     console.error(
@@ -529,11 +589,27 @@ const LiveLearningRoom = () => {
                     }
 
 
-                    await peerConnection.addIceCandidate(
+                    const iceCandidate =
                         new RTCIceCandidate(
                             candidate
-                        )
-                    );
+                        );
+
+
+                    if (
+                        peerConnection.remoteDescription
+                    ) {
+
+                        await peerConnection.addIceCandidate(
+                            iceCandidate
+                        );
+
+                    } else {
+
+                        pendingIceCandidatesRef.current.push(
+                            iceCandidate
+                        );
+
+                    }
 
                 } catch (err) {
 
@@ -618,7 +694,9 @@ const LiveLearningRoom = () => {
         );
 
 
-        if (socket.connected) {
+        if (
+            socket.connected
+        ) {
 
             handleConnect();
 
@@ -687,7 +765,7 @@ const LiveLearningRoom = () => {
                 localStreamRef.current
                     .getTracks()
                     .forEach(
-                        track => {
+                        (track) => {
                             track.stop();
                         }
                     );
@@ -702,6 +780,13 @@ const LiveLearningRoom = () => {
                 peerConnectionRef.current.close();
 
             }
+
+
+            peerConnectionRef.current =
+                null;
+
+            pendingIceCandidatesRef.current =
+                [];
 
         };
 
@@ -729,7 +814,7 @@ const LiveLearningRoom = () => {
 
 
         audioTracks.forEach(
-            track => {
+            (track) => {
 
                 track.enabled =
                     !track.enabled;
@@ -740,7 +825,7 @@ const LiveLearningRoom = () => {
 
         setMicEnabled(
             audioTracks.some(
-                track =>
+                (track) =>
                     track.enabled
             )
         );
@@ -769,7 +854,7 @@ const LiveLearningRoom = () => {
 
 
         videoTracks.forEach(
-            track => {
+            (track) => {
 
                 track.enabled =
                     !track.enabled;
@@ -780,7 +865,7 @@ const LiveLearningRoom = () => {
 
         setCameraEnabled(
             videoTracks.some(
-                track =>
+                (track) =>
                     track.enabled
             )
         );
@@ -811,7 +896,7 @@ const LiveLearningRoom = () => {
             localStreamRef.current
                 .getTracks()
                 .forEach(
-                    track => {
+                    (track) => {
                         track.stop();
                     }
                 );
@@ -863,7 +948,8 @@ const LiveLearningRoom = () => {
                         display: "flex",
                         justifyContent:
                             "space-between",
-                        alignItems: "center",
+                        alignItems:
+                            "center",
                         marginBottom: "20px"
                     }}
                 >
