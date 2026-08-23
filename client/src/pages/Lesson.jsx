@@ -13,6 +13,7 @@ const Lesson = () => {
         lessonId
     } = useParams();
 
+
     const [lesson, setLesson] = useState(null);
     const [loading, setLoading] = useState(true);
     const [completing, setCompleting] = useState(false);
@@ -20,6 +21,12 @@ const Lesson = () => {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
+
+    /*
+     * =========================================================
+     * LOAD LESSON
+     * =========================================================
+     */
 
     useEffect(() => {
 
@@ -31,6 +38,14 @@ const Lesson = () => {
                     localStorage.getItem(
                         "courseforge_token"
                     );
+
+                if (!token) {
+                    setError(
+                        "You are not logged in."
+                    );
+                    return;
+                }
+
 
                 const response = await api.get(
                     `/courses/${courseId}`,
@@ -122,6 +137,12 @@ const Lesson = () => {
     }, [courseId, lessonId]);
 
 
+    /*
+     * =========================================================
+     * COMPLETE LESSON
+     * =========================================================
+     */
+
     const handleComplete = async () => {
 
         try {
@@ -135,6 +156,16 @@ const Lesson = () => {
                 localStorage.getItem(
                     "courseforge_token"
                 );
+
+
+            if (!token) {
+
+                setError(
+                    "You are not logged in."
+                );
+
+                return;
+            }
 
 
             /*
@@ -226,10 +257,24 @@ const Lesson = () => {
     };
 
 
+    /*
+     * =========================================================
+     * LOADING
+     * =========================================================
+     */
+
     if (loading) {
+
         return <Loading />;
+
     }
 
+
+    /*
+     * =========================================================
+     * ERROR
+     * =========================================================
+     */
 
     if (error && !lesson) {
 
@@ -261,7 +306,7 @@ const Lesson = () => {
                         >
 
                             <Link
-                                to={`/courses/${courseId}`}
+                                to={`/course/${courseId}`}
                             >
                                 ← Back to Course
                             </Link>
@@ -277,9 +322,17 @@ const Lesson = () => {
 
 
     if (!lesson) {
+
         return null;
+
     }
 
+
+    /*
+     * =========================================================
+     * RENDER
+     * =========================================================
+     */
 
     return (
         <>
@@ -296,7 +349,7 @@ const Lesson = () => {
                 >
 
                     <Link
-                        to={`/courses/${courseId}`}
+                        to={`/course/${courseId}`}
                     >
                         ← Back to Course
                     </Link>
@@ -495,8 +548,12 @@ const Lesson = () => {
 
                         <button
                             className="primary-btn"
-                            onClick={handleComplete}
-                            disabled={completing}
+                            onClick={
+                                handleComplete
+                            }
+                            disabled={
+                                completing
+                            }
                         >
                             {completing
                                 ? "Marking Complete..."
@@ -516,7 +573,7 @@ const Lesson = () => {
 
 
                     <Link
-                        to={`/courses/${courseId}`}
+                        to={`/course/${courseId}`}
                         className="primary-btn"
                     >
                         Back to Course

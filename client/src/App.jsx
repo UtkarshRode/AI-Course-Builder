@@ -53,7 +53,7 @@ function App() {
                 />
 
                 <Route
-                    path="/lesson/:lessonId"
+                    path="/course/:courseId/lesson/:lessonId"
                     element={<Lesson />}
                 />
 

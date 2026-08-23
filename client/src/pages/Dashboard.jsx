@@ -1451,7 +1451,7 @@ const Dashboard = () => {
                                             >
 
                                                 <Link
-    to={`/lesson/${lesson.id}`}
+    to={`/course/${COURSE_ID}/lesson/${lesson.id}`}
 >
     {lesson.title}
 </Link>
