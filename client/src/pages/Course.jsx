@@ -4,7 +4,6 @@ import { Link, useParams } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import Loading from "../components/Loading";
-import ProgressBar from "../components/ProgressBar";
 
 
 const Course = () => {
@@ -27,6 +26,14 @@ const Course = () => {
                         "courseforge_token"
                     );
 
+                if (!token) {
+                    setError(
+                        "You are not logged in."
+                    );
+                    return;
+                }
+
+
                 const response = await api.get(
                     `/courses/${courseId}`,
                     {
@@ -37,30 +44,26 @@ const Course = () => {
                     }
                 );
 
-                console.log(
-                    "COURSE RESPONSE:",
-                    response.data
-                );
 
-
-                if (response.data.success) {
-
-                    setCourse(
-                        response.data.course
-                    );
-
-                } else {
+                if (!response.data.success) {
 
                     setError(
                         response.data.message ||
                         "Failed to load course"
                     );
+
+                    return;
                 }
+
+
+                setCourse(
+                    response.data.course
+                );
 
             } catch (err) {
 
                 console.error(
-                    "Course error:",
+                    "Course loading error:",
                     err
                 );
 
@@ -86,7 +89,7 @@ const Course = () => {
     }
 
 
-    if (error) {
+    if (error || !course) {
 
         return (
             <>
@@ -106,8 +109,19 @@ const Course = () => {
                                 marginTop: "12px"
                             }}
                         >
-                            {error}
+                            {error ||
+                                "Course not found"}
                         </p>
+
+                        <div
+                            style={{
+                                marginTop: "16px"
+                            }}
+                        >
+                            <Link to="/dashboard">
+                                ← Back to Dashboard
+                            </Link>
+                        </div>
 
                     </div>
 
@@ -117,25 +131,28 @@ const Course = () => {
     }
 
 
-    if (!course) {
-        return null;
-    }
-
-
     return (
         <>
             <Navbar />
 
             <main className="page">
 
-                {/* Course Header */}
+                {/* Back to dashboard */}
 
                 <div
-                    className="card"
                     style={{
-                        marginBottom: "24px"
+                        marginBottom: "20px"
                     }}
                 >
+                    <Link to="/dashboard">
+                        ← Back to Dashboard
+                    </Link>
+                </div>
+
+
+                {/* Course header */}
+
+                <div className="card">
 
                     <h1>
                         {course.title}
@@ -154,94 +171,79 @@ const Course = () => {
 
                     <div
                         style={{
-                            marginTop: "20px"
+                            marginTop: "16px",
+                            display: "flex",
+                            gap: "10px",
+                            flexWrap: "wrap"
                         }}
                     >
 
-                        <Link
-                            to="/dashboard"
-                            className="primary-btn"
-                        >
-                            Back to Dashboard
-                        </Link>
+                        <span className="badge">
+                            {course.difficulty}
+                        </span>
+
+                        <span className="badge">
+                            {course.status}
+                        </span>
+
+                        {course.estimatedHours && (
+                            <span className="badge">
+                                {course.estimatedHours} hours
+                            </span>
+                        )}
 
                     </div>
 
                 </div>
 
 
-                {/* Course Modules */}
-
-                <h2>
-                    Course Content
-                </h2>
-
+                {/* Course modules */}
 
                 <div
+                    className="card"
                     style={{
-                        marginTop: "16px"
+                        marginTop: "20px"
                     }}
                 >
 
-                    {(course.modules || []).map(
-                        (module, moduleIndex) => (
+                    <h2>
+                        Course Modules
+                    </h2>
 
-                            <div
-                                className="card"
-                                key={module.id}
-                                style={{
-                                    marginBottom: "20px"
-                                }}
-                            >
+
+                    <div
+                        style={{
+                            marginTop: "20px"
+                        }}
+                    >
+
+                        {(course.modules || []).map(
+                            (module) => (
 
                                 <div
+                                    className="card"
+                                    key={module.id}
                                     style={{
-                                        display: "flex",
-                                        justifyContent:
-                                            "space-between",
-                                        alignItems:
-                                            "center",
-                                        gap: "20px"
+                                        marginBottom: "16px"
                                     }}
                                 >
 
-                                    <div>
+                                    <h3>
+                                        {module.position}.{" "}
+                                        {module.title}
+                                    </h3>
 
-                                        <h3>
-                                            {module.title ||
-                                                `Module ${moduleIndex + 1}`}
-                                        </h3>
+                                    {module.description && (
+                                        <p
+                                            className="muted"
+                                            style={{
+                                                marginTop: "8px"
+                                            }}
+                                        >
+                                            {module.description}
+                                        </p>
+                                    )}
 
-                                        {module.description && (
-                                            <p
-                                                className="muted"
-                                                style={{
-                                                    marginTop:
-                                                        "6px"
-                                                }}
-                                            >
-                                                {
-                                                    module.description
-                                                }
-                                            </p>
-                                        )}
-
-                                    </div>
-
-
-                                    <strong>
-                                        {module.lessons?.length ||
-                                            0}{" "}
-                                        lessons
-                                    </strong>
-
-                                </div>
-
-
-                                {/* Module Progress */}
-
-                                {typeof module.progress ===
-                                    "number" && (
 
                                     <div
                                         style={{
@@ -249,91 +251,55 @@ const Course = () => {
                                         }}
                                     >
 
-                                        <ProgressBar
-                                            value={
-                                                module.progress
-                                            }
-                                        />
+                                        {(module.lessons || [])
+                                            .map(
+                                                (lesson) => (
 
-                                    </div>
+                                                    <div
+                                                        key={
+                                                            lesson.id
+                                                        }
+                                                        style={{
+                                                            padding:
+                                                                "10px 0"
+                                                        }}
+                                                    >
 
-                                )}
+                                                        <Link
+                                                            to={`/course/${courseId}/lesson/${lesson.id}`}
+                                                        >
+                                                            {lesson.position}.{" "}
+                                                            {lesson.title}
+                                                        </Link>
 
-
-                                {/* Lessons */}
-
-                                <div
-                                    style={{
-                                        marginTop: "16px"
-                                    }}
-                                >
-
-                                    {(module.lessons || []).map(
-                                        (lesson, lessonIndex) => (
-
-                                            <Link
-                                                key={lesson.id}
-                                                to={`/courses/${courseId}/lessons/${lesson.id}`}
-                                                style={{
-                                                    textDecoration:
-                                                        "none",
-                                                    color:
-                                                        "inherit"
-                                                }}
-                                            >
-
-                                                <div
-                                                    className="lesson-item"
-                                                >
-
-                                                    <div>
-
-                                                        <strong>
-                                                            {lessonIndex +
-                                                                1}.
-                                                        </strong>{" "}
-
-                                                        {lesson.title}
-
-                                                        {lesson.description && (
-                                                            <p
+                                                        {lesson.estimatedMinutes && (
+                                                            <span
                                                                 className="muted"
                                                                 style={{
-                                                                    marginTop:
-                                                                        "4px"
+                                                                    marginLeft:
+                                                                        "10px"
                                                                 }}
                                                             >
                                                                 {
-                                                                    lesson.description
-                                                                }
-                                                            </p>
+                                                                    lesson.estimatedMinutes
+                                                                }{" "}
+                                                                min
+                                                            </span>
                                                         )}
 
                                                     </div>
 
+                                                )
+                                            )}
 
-                                                    <span
-                                                        className="badge"
-                                                    >
-                                                        {
-                                                            lesson.status ||
-                                                            "NOT_STARTED"
-                                                        }
-                                                    </span>
-
-                                                </div>
-
-                                            </Link>
-
-                                        )
-                                    )}
+                                    </div>
 
                                 </div>
 
-                            </div>
+                            )
+                        )}
 
-                        )
-                    )}
+                    </div>
 
                 </div>
 
