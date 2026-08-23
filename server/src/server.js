@@ -39,6 +39,7 @@ const CLIENT_URL =
 app.use(
     cors({
         origin: [
+            CLIENT_URL,
             "http://localhost:5173",
             /^http:\/\/192\.168\.\d+\.\d+:5173$/
         ]
@@ -58,10 +59,11 @@ const io = new Server(
     server,
     {
         cors: {
-            origin: [
-                "http://localhost:5173",
-                /^http:\/\/192\.168\.\d+\.\d+:5173$/
-            ],
+    origin: [
+        CLIENT_URL,
+        "http://localhost:5173",
+        /^http:\/\/192\.168\.\d+\.\d+:5173$/
+    ],
             methods: [
                 "GET",
                 "POST"
